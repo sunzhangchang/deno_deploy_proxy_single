@@ -6,24 +6,24 @@ serve(req => {
   const url = new URL(req.url)
   url.host = Deno.env.get('DOMAIN') ?? url.host
 
-  // console.log(url)
+  console.log(url)
 
   const reqnew = new Request({
     url: url.href,
-    arrayBuffer: req.arrayBuffer,
-    blob: req.blob,
+    // arrayBuffer: req.arrayBuffer,
+    // blob: req.blob,
     body: req.body,
     bodyUsed: req.bodyUsed,
     cache: req.cache,
-    clone: req.clone,
+    // clone: req.clone,
     credentials: req.credentials,
     destination: req.destination,
-    formData: req.formData,
+    // formData: req.formData,
     headers: req.headers,
     integrity: req.integrity,
     isHistoryNavigation: req.isHistoryNavigation,
     isReloadNavigation: req.isReloadNavigation,
-    json: req.json,
+    // json: req.json,
     keepalive: req.keepalive,
     method: req.method,
     mode: req.mode,
@@ -31,7 +31,7 @@ serve(req => {
     referrer: req.referrer,
     referrerPolicy: req.referrerPolicy,
     signal: req.signal,
-    text: req.text,
+    // text: req.text,
   } as RequestInfo)
 
   console.log('out:', reqnew)
