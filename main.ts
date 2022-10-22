@@ -9,7 +9,7 @@ serve(req => {
   const domain = Deno.env.get('DOMAIN') ?? url.host
   url.host = domain
 
-  console.log(req.referer)
+  console.log('origin referer', req.referer)
 
   const referer = req.referer?.length ? new URL(req.referer) : undefined
   if (referer) {
@@ -49,6 +49,7 @@ serve(req => {
   )
 
   console.log('out:', reqnew)
+  console.log('out referer: ', reqnew.referer)
 
   return fetch(reqnew)
 })
