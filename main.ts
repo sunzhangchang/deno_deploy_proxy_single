@@ -8,34 +8,36 @@ serve(req => {
 
   console.log(url)
 
-  const reqnew = new Request({
-    url: url.href,
-    // arrayBuffer: req.arrayBuffer,
-    // blob: req.blob,
-    body: req.body,
-    bodyUsed: req.bodyUsed,
-    cache: req.cache,
-    // clone: req.clone,
-    credentials: req.credentials,
-    destination: req.destination,
-    // formData: req.formData,
-    headers: req.headers,
-    integrity: req.integrity,
-    isHistoryNavigation: req.isHistoryNavigation,
-    isReloadNavigation: req.isReloadNavigation,
-    // json: req.json,
-    keepalive: req.keepalive,
-    method: req.method,
-    mode: req.mode,
-    redirect: req.redirect,
-    referrer: req.referrer,
-    referrerPolicy: req.referrerPolicy,
-    signal: req.signal,
-    // text: req.text,
-  } as RequestInfo)
+  const reqnew = new Request(
+    url,
+    {
+      url: url.href,
+      arrayBuffer: req.arrayBuffer,
+      blob: req.blob,
+      body: req.body,
+      bodyUsed: req.bodyUsed,
+      cache: req.cache,
+      // clone: req.clone,
+      credentials: req.credentials,
+      destination: req.destination,
+      // formData: req.formData,
+      headers: req.headers,
+      integrity: req.integrity,
+      isHistoryNavigation: req.isHistoryNavigation,
+      isReloadNavigation: req.isReloadNavigation,
+      // json: req.json,
+      keepalive: req.keepalive,
+      method: req.method,
+      mode: req.mode,
+      redirect: req.redirect,
+      referrer: req.referrer,
+      referrerPolicy: req.referrerPolicy,
+      signal: req.signal,
+      text: req.text,
+    } as RequestInit
+  )
 
   console.log('out:', reqnew)
 
-  // return fetch(reqnew)
-  return new Response('123')
+  return fetch(reqnew)
 })
