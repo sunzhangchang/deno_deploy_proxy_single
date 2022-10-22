@@ -36,5 +36,6 @@ serve(req => {
 
   console.log('out:', reqnew)
 
-  return fetch(reqnew)
+  // return fetch(reqnew)
+  return new Response('123')
 })
