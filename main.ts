@@ -36,5 +36,5 @@ serve(req => {
 
   console.log('out:', reqnew)
 
-  return fetch(url.href, reqnew)
+  return fetch(reqnew)
 })
