@@ -12,7 +12,8 @@ serve(req => {
   const referrer = new URL(req.referrer)
   referrer.host = domain
 
-  console.log(url)
+  console.log('url: ', url)
+  console.log('referer: ', referrer)
 
   const reqnew = new Request(
     url,
