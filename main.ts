@@ -3,15 +3,15 @@ import { serve } from 'https://deno.land/std@0.160.0/http/server.ts'
 
 serve(req => {
   console.log('in:', req)
-  
-  
+
+
   const url = new URL(req.url)
   const domain = Deno.env.get('DOMAIN') ?? url.host
   url.host = domain
 
   console.log(req.referrer)
 
-  const referrer = req.referrer.length ? new URL(req.referrer) : undefined
+  const referrer = req.referrer?.length ? new URL(req.referrer) : undefined
   if (referrer) {
     referrer.host = domain
   }
