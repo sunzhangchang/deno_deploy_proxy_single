@@ -9,8 +9,10 @@ serve(req => {
   const domain = Deno.env.get('DOMAIN') ?? url.host
   url.host = domain
 
-  const referrer = new URL(req.referrer)
-  referrer.host = domain
+  const referrer = req.referrer ? new URL(req.referrer) : undefined
+  if (referrer) {
+    referrer.host = domain
+  }
 
   console.log('url: ', url)
   console.log('referer: ', referrer)
@@ -37,7 +39,7 @@ serve(req => {
       method: req.method,
       mode: req.mode,
       redirect: req.redirect,
-      referrer: referrer.href,
+      referrer: referrer?.href,
       referrerPolicy: req.referrerPolicy,
       signal: req.signal,
       text: req.text,
