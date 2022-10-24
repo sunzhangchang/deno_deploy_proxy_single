@@ -103,10 +103,11 @@ serve(async (req) => {
   
   console.log('new response headers: ', newResponseHeaders)
 
-  return new Response(origText, {
-    status,
-    headers: newResponseHeaders,
-  })
+  // return new Response(origText, {
+  //   status,
+  //   headers: newResponseHeaders,
+  // })
+  return originalResponse
   // const reqnew = new Request(
   //   url,
   //   {
