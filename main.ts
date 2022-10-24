@@ -62,8 +62,8 @@ serve(async (req) => {
   const newResponseHeaders = new Headers(responseHeaders)
   const status = originalResponse.status
 
-  newResponseHeaders.set('access-control-allow-origin', '*')
-  newResponseHeaders.set('access-control-allow-credentials', 'true')
+  // newResponseHeaders.set('access-control-allow-origin', '*')
+  // newResponseHeaders.set('access-control-allow-credentials', 'true')
   // newResponseHeaders.delete('content-security-policy')
   // newResponseHeaders.delete('content-security-policy-report-only')
   // newResponseHeaders.delete('clear-site-data')
