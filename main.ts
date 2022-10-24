@@ -84,6 +84,8 @@ serve(async (req) => {
       return origResponseClone.body
     }
   })()
+  
+  console.log('new response headers: ', newResponseHeaders)
 
   return new Response(origText, {
     status,
