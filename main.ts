@@ -34,7 +34,7 @@ serve(req => {
     referer.host = domain
   }
 
-  console.log('url: ', url)
+  // console.log('url: ', url)
   console.log('referer: ', referer)
 
   const reqnew = new Request(
@@ -67,7 +67,7 @@ serve(req => {
   )
 
   console.log('out:', reqnew)
-  console.log('out referer: ', reqnew.referer)
+  console.log('out referer: ', reqnew.headers.get('referer'))
   console.log('out referrer: ', reqnew.referrer)
 
   return fetch(reqnew)
