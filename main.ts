@@ -1,7 +1,20 @@
 import { serve } from 'https://deno.land/std@0.160.0/http/server.ts'
 
+const env = Deno.env.toObject()
 
-serve(req => {
+const replaceDictEntries: [string, string][] = []
+
+for (const key in env) {
+  if (Object.hasOwn(env, key)) {
+    const value = env[key]
+    if (key.startsWith("REPLACE_")) {
+      const a = value.split('=>').map(v => v.trim())
+      replaceDictEntries.push([a[0], a[1]])
+    }
+  }
+}
+
+serve(async (req) => {
   console.log('in:', req)
 
   const url = new URL(req.url)
@@ -9,68 +22,95 @@ serve(req => {
   const now_host = url.host
 
   const domain = Deno.env.get('DOMAIN') ?? 'github.com'
+
+  const replaceDict = replaceDictEntries.map(v => v.map(v => v.replaceAll('$upstream', domain).replaceAll('$custom', now_host),)) as [string, string][]
+
   url.host = domain
   url.port = ''
 
   const headers = req.headers
-  const treferer = headers.get('referer')
-  const thost = headers.get('host')
-  const new_headers = new Headers()
+  const newRequestHeaders = new Headers(headers)
 
-  headers.forEach((v, k) => {
-    if (k === 'referer' || k === 'host') {
-      return
-    }
-    new_headers.set(k, v)
-  })
+  const originalReferer = headers.get('referer')
 
-  console.log('origin referer', treferer)
-  console.log('origin host', thost)
+  if (originalReferer) {
+    const referer = new URL(originalReferer)
 
-  const referer = treferer?.length ? new URL(treferer) : undefined
-
-  if (referer) {
     referer.host = domain
+
+    newRequestHeaders.set('referer', referer.href)
   }
 
-  // console.log('url: ', url)
-  console.log('referer: ', referer)
-  console.log('host: ', domain)
+  newRequestHeaders.set('host', domain)
 
-  referer && new_headers.set('referer', referer.href)
-  new_headers.set('host', domain)
+  const reqInit = {
+    url: url.href,
+    method: req.method,
+    body: req.method === 'POST' ? await req.text() : undefined,
+    headers: newRequestHeaders,
+  } as RequestInit
 
-  const reqnew = new Request(
-    url,
-    {
-      url: url.href,
-      arrayBuffer: req.arrayBuffer,
-      blob: req.blob,
-      body: req.body,
-      bodyUsed: req.bodyUsed,
-      cache: req.cache,
-      // clone: req.clone,
-      credentials: req.credentials,
-      destination: req.destination,
-      // formData: req.formData,
-      headers: new_headers,
-      integrity: req.integrity,
-      isHistoryNavigation: req.isHistoryNavigation,
-      isReloadNavigation: req.isReloadNavigation,
-      // json: req.json,
-      keepalive: req.keepalive,
-      method: req.method,
-      mode: req.mode,
-      redirect: req.redirect,
-      referrerPolicy: req.referrerPolicy,
-      signal: req.signal,
-      text: req.text,
-    } as RequestInit
-  )
+  const originalResponse = await fetch(url.href, reqInit)
 
-  console.log('out:', reqnew)
-  console.log('out referer: ', reqnew.headers.get('referer'))
-  console.log('out referrer: ', reqnew.referrer)
+  const connectionUpgrade = newRequestHeaders.get("Upgrade");
+  if (connectionUpgrade && connectionUpgrade.toLowerCase() === "websocket") {
+    return originalResponse;
+  }
 
-  return fetch(reqnew)
+  const origResponseClone = originalResponse.clone()
+  const responseHeaders = originalResponse.headers
+  const newResponseHeaders = new Headers(responseHeaders)
+  const status = originalResponse.status
+
+  newResponseHeaders.set('access-control-allow-origin', '*')
+  newResponseHeaders.set('access-control-allow-credentials', 'true')
+  newResponseHeaders.delete('content-security-policy')
+  newResponseHeaders.delete('content-security-policy-report-only')
+  newResponseHeaders.delete('clear-site-data')
+
+  // if (new_response_headers.get("x-pjax-url")) {
+  //   new_response_headers.set("x-pjax-url", response_headers.get("x-pjax-url").replace("//" + upstream_domain, "//" + url_hostname));
+  // }
+
+  const content_type = newResponseHeaders.get('content-type');
+  const origText = await (async () => {
+    if (content_type != null && content_type.includes('text/html') && content_type.includes('UTF-8')) {
+      const text = await origResponseClone.text()
+      for (const [a, b] of replaceDict) {
+        text.replaceAll(a, b)
+      }
+      return text
+    } else {
+      return origResponseClone.body
+    }
+  })()
+
+  return new Response(origText, {
+    status,
+    headers: newResponseHeaders,
+  })
+  // const reqnew = new Request(
+  //   url,
+  //   {
+  //     url: url.href,
+  //     body: req.body,
+  //     bodyUsed: req.bodyUsed,
+  //     cache: req.cache,
+  //     credentials: req.credentials,
+  //     destination: req.destination,
+  //     headers: new_headers,
+  //     integrity: req.integrity,
+  //     isHistoryNavigation: req.isHistoryNavigation,
+  //     isReloadNavigation: req.isReloadNavigation,
+  //     keepalive: req.keepalive,
+  //     method: req.method,
+  //     mode: req.mode,
+  //     redirect: req.redirect,
+  //     referrerPolicy: req.referrerPolicy,
+  //     signal: req.signal,
+  //     text: req.text,
+  //   } as RequestInit
+  // )
+
+  // return fetch(reqnew)
 })
