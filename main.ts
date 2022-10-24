@@ -59,8 +59,12 @@ serve(async (req) => {
     body: req.method === 'POST' ? await req.text() : undefined,
     headers: newRequestHeaders,
   } as RequestInit
+  
+  const newReq = new Request(url, reqInit)
 
-  const originalResponse = await fetch(url.href, reqInit)
+  console.log('out: ', newReq)
+
+  const originalResponse = await fetch(newReq)
 
   // const connectionUpgrade = newRequestHeaders.get("Upgrade");
   // if (connectionUpgrade && connectionUpgrade.toLowerCase() === "websocket") {
