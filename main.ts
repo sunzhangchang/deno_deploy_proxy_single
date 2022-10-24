@@ -19,11 +19,11 @@ serve(async (req) => {
 
   const url = new URL(req.url)
 
-  const now_host = url.host
+  const nowHost = url.host
 
   const domain = Deno.env.get('DOMAIN') ?? 'github.com'
 
-  const replaceDict = replaceDictEntries.map(v => v.map(v => v.replaceAll('$upstream', domain).replaceAll('$custom', now_host),)) as [string, string][]
+  const replaceDict = replaceDictEntries.map(v => v.map(v => v.replaceAll('$upstream', domain).replaceAll('$custom', nowHost),)) as [string, string][]
 
   url.host = domain
   url.port = ''
@@ -84,6 +84,9 @@ serve(async (req) => {
       return origResponseClone.body
     }
   })()
+
+  const setCookie = newResponseHeaders.get('set-cookie')
+  setCookie && newResponseHeaders.set('set-cookie', setCookie.replaceAll(domain, nowHost))
   
   console.log('new response headers: ', newResponseHeaders)
 
