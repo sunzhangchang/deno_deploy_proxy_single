@@ -52,12 +52,11 @@ serve(async (req) => {
 
   const originalResponse = await fetch(url.href, reqInit)
 
-  const connectionUpgrade = newRequestHeaders.get("Upgrade");
-  if (connectionUpgrade && connectionUpgrade.toLowerCase() === "websocket") {
-    return originalResponse;
-  }
+  // const connectionUpgrade = newRequestHeaders.get("Upgrade");
+  // if (connectionUpgrade && connectionUpgrade.toLowerCase() === "websocket") {
+  //   return originalResponse;
+  // }
 
-  const origResponseClone = originalResponse.clone()
   const responseHeaders = originalResponse.headers
   const newResponseHeaders = new Headers(responseHeaders)
   const status = originalResponse.status
@@ -74,14 +73,14 @@ serve(async (req) => {
 
   const content_type = newResponseHeaders.get('content-type');
   const origText = await (async () => {
-    if (content_type != null && content_type.includes('text/html') && content_type.includes('UTF-8')) {
-      const text = await origResponseClone.text()
+    if (content_type !== null && content_type.includes('text/html') && content_type.includes('UTF-8')) {
+      const text = await originalResponse.text()
       for (const [a, b] of replaceDict) {
         text.replaceAll(a, b)
       }
       return text
     } else {
-      return origResponseClone.body
+      return originalResponse.body
     }
   })()
 
