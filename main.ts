@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.160.0/http/server.ts'
 
 const env = Deno.env.toObject()
 
-const replaceDictEntries: [string, string][] = []
+const replaceDictEntries: [string, string][] = [['$upstream', '$custom']]
 
 for (const key in env) {
   if (Object.hasOwn(env, key)) {
@@ -79,20 +79,20 @@ serve(async (req) => {
 
   const originalResponse = await fetch(newReq)
 
-  // const connectionUpgrade = newRequestHeaders.get("Upgrade");
-  // if (connectionUpgrade && connectionUpgrade.toLowerCase() === "websocket") {
-  //   return originalResponse;
-  // }
+  const connectionUpgrade = newRequestHeaders.get("upgrade");
+  if (connectionUpgrade && connectionUpgrade.toLowerCase() === "websocket") {
+    return originalResponse;
+  }
 
   const responseHeaders = originalResponse.headers
   const newResponseHeaders = new Headers(responseHeaders)
   const status = originalResponse.status
 
-  // newResponseHeaders.set('access-control-allow-origin', '*')
-  // newResponseHeaders.set('access-control-allow-credentials', 'true')
-  // newResponseHeaders.delete('content-security-policy')
-  // newResponseHeaders.delete('content-security-policy-report-only')
-  // newResponseHeaders.delete('clear-site-data')
+  newResponseHeaders.set('access-control-allow-origin', '*')
+  newResponseHeaders.set('access-control-allow-credentials', 'true')
+  newResponseHeaders.delete('content-security-policy')
+  newResponseHeaders.delete('content-security-policy-report-only')
+  newResponseHeaders.delete('clear-site-data')
 
   // if (new_response_headers.get("x-pjax-url")) {
   //   new_response_headers.set("x-pjax-url", response_headers.get("x-pjax-url").replace("//" + upstream_domain, "//" + url_hostname));
@@ -116,11 +116,11 @@ serve(async (req) => {
 
   console.log('new response headers: ', newResponseHeaders)
 
-  // return new Response(origText, {
-  //   status,
-  //   headers: newResponseHeaders,
-  // })
-  return originalResponse
+  return new Response(origText, {
+    status,
+    headers: newResponseHeaders,
+  })
+  // return originalResponse
   // const reqnew = new Request(
   //   url,
   //   {
