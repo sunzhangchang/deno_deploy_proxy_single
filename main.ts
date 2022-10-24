@@ -64,9 +64,9 @@ serve(async (req) => {
 
   newResponseHeaders.set('access-control-allow-origin', '*')
   newResponseHeaders.set('access-control-allow-credentials', 'true')
-  newResponseHeaders.delete('content-security-policy')
-  newResponseHeaders.delete('content-security-policy-report-only')
-  newResponseHeaders.delete('clear-site-data')
+  // newResponseHeaders.delete('content-security-policy')
+  // newResponseHeaders.delete('content-security-policy-report-only')
+  // newResponseHeaders.delete('clear-site-data')
 
   // if (new_response_headers.get("x-pjax-url")) {
   //   new_response_headers.set("x-pjax-url", response_headers.get("x-pjax-url").replace("//" + upstream_domain, "//" + url_hostname));
