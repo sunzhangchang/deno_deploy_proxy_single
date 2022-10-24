@@ -4,14 +4,32 @@ import { serve } from 'https://deno.land/std@0.160.0/http/server.ts'
 serve(req => {
   console.log('in:', req)
 
-
   const url = new URL(req.url)
-  const domain = Deno.env.get('DOMAIN') ?? url.host
+
+  const now_host = url.host
+
+  const domain = Deno.env.get('DOMAIN') ?? 'github.com'
   url.host = domain
+  url.port = ''
 
-  console.log('origin referer', req.referer)
+  const headers = req.headers
+  const treferer = headers.get('referer')
+  const thost = headers.get('host')
+  const new_headers = new Headers()
 
-  const referer = req.referer?.length ? new URL(req.referer) : undefined
+  headers.forEach((v, k) => {
+    if (k === 'referer' || k === 'host') {
+      return
+    }
+    new_headers.set(k, v)
+  })
+
+  console.log('origin referer', treferer)
+  console.log('origin host', thost)
+
+  const referer = treferer?.length ? new URL(treferer) : undefined
+
+
   if (referer) {
     referer.host = domain
   }
@@ -50,6 +68,7 @@ serve(req => {
 
   console.log('out:', reqnew)
   console.log('out referer: ', reqnew.referer)
+  console.log('out referrer: ', reqnew.referrer)
 
   return fetch(reqnew)
 })
