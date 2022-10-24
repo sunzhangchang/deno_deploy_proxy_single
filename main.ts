@@ -41,6 +41,16 @@ serve(async (req) => {
     newRequestHeaders.set('referer', referer.href)
   }
 
+  const originalOrigin = headers.get('origin')
+
+  if (originalOrigin) {
+    const origin = new URL(originalOrigin)
+
+    origin.host = domain
+
+    newRequestHeaders.set('origin', origin.href)
+  }
+
   newRequestHeaders.set('host', domain)
 
   const reqInit = {
