@@ -29,13 +29,22 @@ serve(req => {
 
   const referer = treferer?.length ? new URL(treferer) : undefined
 
-
   if (referer) {
     referer.host = domain
   }
 
+  const host = thost?.length ? new URL(thost) : undefined
+
+  if (host) {
+    host.host = domain
+  }
+
   // console.log('url: ', url)
   console.log('referer: ', referer)
+  console.log('host: ', host)
+
+  referer && new_headers.set('referer', referer.href)
+  host && new_headers.set('host', host.href)
 
   const reqnew = new Request(
     url,
