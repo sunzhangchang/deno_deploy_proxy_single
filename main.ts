@@ -58,8 +58,21 @@ serve(async (req) => {
     method: req.method,
     body: req.method === 'POST' ? await req.text() : undefined,
     headers: newRequestHeaders,
+    bodyUsed: req.bodyUsed,
+    cache: req.cache,
+    credentials: req.credentials,
+    integrity: req.integrity,
+    isHistoryNavigation: req.isHistoryNavigation,
+    isReloadNavigation: req.isReloadNavigation,
+    mode: req.mode,
+    destination: req.destination,
+    keepalive: req.keepalive,
+    referrerPolicy: req.referrerPolicy,
+    signal: req.signal,
+    //     redirect: req.redirect,
+    //     text: req.text,
   } as RequestInit
-  
+
   const newReq = new Request(url, reqInit)
 
   console.log('out: ', newReq)
@@ -100,7 +113,7 @@ serve(async (req) => {
 
   const setCookie = newResponseHeaders.get('set-cookie')
   setCookie && newResponseHeaders.set('set-cookie', setCookie.replaceAll(domain, nowHost))
-  
+
   console.log('new response headers: ', newResponseHeaders)
 
   // return new Response(origText, {
