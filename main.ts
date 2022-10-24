@@ -21,7 +21,7 @@ serve(async (req) => {
 
   const nowHost = url.host
 
-  const domain = Deno.env.get('DOMAIN') ?? 'github.com'
+  const domain = Deno.env.get('DOMAIN') ?? nowHost
 
   const replaceDict = replaceDictEntries.map(v => v.map(v => v.replaceAll('$upstream', domain).replaceAll('$custom', nowHost),)) as [string, string][]
 
